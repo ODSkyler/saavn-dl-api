@@ -1,0 +1,3 @@
+name = "saavn-dl-api"
+main = "worker.js"
+compatibility_date = "2026-05-12"
