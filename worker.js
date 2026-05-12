@@ -1,0 +1,294 @@
+export default {
+  async fetch(request) {
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, OPTIONS",
+      "Access-Control-Allow-Headers": "*",
+      "Content-Type": "application/json",
+    };
+
+    // HANDLE PREFLIGHT
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: corsHeaders,
+      });
+    }
+
+    try {
+      const url = new URL(request.url);
+      const pathname = url.pathname;
+
+      // ROOT
+      if (pathname === "/") {
+        return json(
+          {
+            repo: "ODSkyler/saavn-dl-api",
+            status: "running",
+            endpoints: {
+              song: "/song?url=JIOSAAVN_SONG_URL",
+            },
+          },
+          corsHeaders
+        );
+      }
+
+      // SONG ROUTE
+      if (pathname === "/song") {
+        const songUrl = url.searchParams.get("url");
+
+        if (!songUrl) {
+          return error(
+            "Missing 'url' query parameter",
+            400,
+            corsHeaders
+          );
+        }
+
+        // VALIDATE URL
+        if (!songUrl.includes("jiosaavn.com/song/")) {
+          return error(
+            "Invalid JioSaavn song URL",
+            400,
+            corsHeaders
+          );
+        }
+
+        // EXTRACT TOKEN
+        const token = extractToken(songUrl);
+
+        if (!token) {
+          return error(
+            "Could not extract song token",
+            400,
+            corsHeaders
+          );
+        }
+
+        // BUILD API URL
+        const endpoint =
+          "https://www.jiosaavn.com/api.php" +
+          `?__call=webapi.get` +
+          `&token=${encodeURIComponent(token)}` +
+          `&type=song` +
+          `&includeMetaTags=0` +
+          `&ctx=web6dot0` +
+          `&api_version=4` +
+          `&_format=json` +
+          `&_marker=0`;
+
+        // FETCH FROM JIOSAAVN
+        const response = await fetch(endpoint, {
+          method: "GET",
+          headers: buildHeaders(songUrl),
+        });
+
+        if (!response.ok) {
+          return error(
+            "Failed to fetch song data",
+            500,
+            corsHeaders
+          );
+        }
+
+        const raw = await response.json();
+
+        const song = raw?.songs?.[0];
+
+        if (!song) {
+          return error(
+            "Song not found",
+            404,
+            corsHeaders
+          );
+        }
+
+        // CLEAN RESPONSE
+        const cleaned = cleanSong(song);
+
+        return json(cleaned, corsHeaders);
+      }
+
+      return error(
+        "Route not found",
+        404,
+        corsHeaders
+      );
+    } catch (err) {
+      return error(
+        err?.message || "Internal Server Error",
+        500,
+        corsHeaders
+      );
+    }
+  },
+};
+
+// ========================
+// HELPERS
+// ========================
+
+function extractToken(url) {
+  try {
+    const clean = url.split("?")[0];
+    const parts = clean.split("/");
+
+    return parts[parts.length - 1];
+  } catch {
+    return null;
+  }
+}
+
+function upgradeImage(url) {
+  if (!url) return null;
+
+  return url
+    .replace("50x50", "500x500")
+    .replace("150x150", "500x500");
+}
+
+function buildHeaders(refererUrl) {
+  return {
+    accept: "application/json, text/plain, */*",
+
+    "x-requested-with":
+      "XMLHttpRequest",
+
+    "accept-language":
+      "en-US,en;q=0.9",
+
+    referer: refererUrl,
+
+    "user-agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+
+    cookie:
+      "_pl=web6dot0_; " +
+      "DL=english; " +
+      "B=74f2d64d49fd2f66399c06719d0085ac; " +
+      "CT=NDa3Mlk5MyY0; " +
+      "L=hindi%2Cenglish; " +
+      "mm_latlong=20.2706%2C85.8334; " +
+      "CH=G03%2CA07%2C000%2CL03; ",
+  };
+}
+
+function cleanSong(song) {
+  const info = song.more_info || {};
+  const artistMap = info.artistMap || {};
+
+  return {
+    id: song.id,
+    token: extractToken(song.perma_url),
+
+    title: song.title,
+    subtitle: song.subtitle,
+    type: song.type,
+
+    perma_url: song.perma_url,
+
+    image: upgradeImage(song.image),
+
+    language: song.language,
+    year: song.year,
+
+    play_count: song.play_count,
+
+    isExplicit:
+      song.explicit_content === "1",
+
+    more_info: {
+      album_id: info.album_id,
+
+      album_token: extractToken(
+        info.album_url || ""
+      ),
+
+      album: info.album,
+
+      album_url: info.album_url,
+
+      encrypted_media_url:
+        info.encrypted_media_url,
+
+      duration: info.duration,
+
+      copyright_text:
+        info.copyright_text,
+
+      artists: {
+        primary: (
+          artistMap.primary_artists || []
+        ).map((artist) => ({
+          id: artist.id,
+
+          artist_token: extractToken(
+            artist.perma_url || ""
+          ),
+
+          name: artist.name,
+
+          image: upgradeImage(
+            artist.image
+          ),
+
+          perma_url:
+            artist.perma_url,
+        })),
+
+        featured: (
+          artistMap.featured_artists || []
+        ).map((artist) => ({
+          id: artist.id,
+
+          artist_token: extractToken(
+            artist.perma_url || ""
+          ),
+
+          name: artist.name,
+
+          image: upgradeImage(
+            artist.image
+          ),
+
+          perma_url:
+            artist.perma_url,
+        })),
+      },
+
+      release_date:
+        info.release_date,
+
+      vcode: info.vcode,
+
+      vlink: info.vlink,
+    },
+  };
+}
+
+function json(data, headers) {
+  return new Response(
+    JSON.stringify(data, null, 2),
+    {
+      status: 200,
+      headers,
+    }
+  );
+}
+
+function error(message, status, headers) {
+  return new Response(
+    JSON.stringify(
+      {
+        status: "error",
+        message,
+      },
+      null,
+      2
+    ),
+    {
+      status,
+      headers,
+    }
+  );
+}
