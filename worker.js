@@ -19,7 +19,8 @@ export default {
       const url = new URL(request.url);
       const pathname = url.pathname;
 
-      // IMAGE PROXY
+// IMAGE PROXY
+
 if (pathname === "/image") {
   const target = url.searchParams.get("url");
 
@@ -31,22 +32,45 @@ if (pathname === "/image") {
     );
   }
 
-  const img = await fetch(target);
+  const response = await fetch(target, {
+    cf: {
+      cacheTtl: 86400,
+      cacheEverything: true,
+    },
+  });
 
-  return new Response(img.body, {
+  if (!response.ok) {
+    return error(
+      "Failed to fetch image",
+      500,
+      corsHeaders
+    );
+  }
+
+  return new Response(response.body, {
+    status: response.status,
     headers: {
       ...corsHeaders,
+
       "Content-Type":
-        img.headers.get("content-type") ||
+        response.headers.get("content-type") ||
         "image/jpeg",
 
       "Cache-Control":
         "public, max-age=86400",
+
+      // IMPORTANT
+      "Cross-Origin-Resource-Policy":
+        "cross-origin",
+
+      "Cross-Origin-Embedder-Policy":
+        "require-corp",
     },
   });
 }
 
 // PREVIEW AUDIO PROXY
+
 if (pathname === "/preview") {
   const target = url.searchParams.get("url");
 
@@ -58,27 +82,52 @@ if (pathname === "/preview") {
     );
   }
 
-  const audio = await fetch(target, {
-    headers: {
-      Range:
-        request.headers.get("Range") ||
-        "bytes=0-",
-    },
+  const range =
+    request.headers.get("Range");
+
+  const response = await fetch(target, {
+    headers: range
+      ? {
+          Range: range,
+        }
+      : {},
   });
 
-  return new Response(audio.body, {
-    status: audio.status,
+  if (!response.ok && response.status !== 206) {
+    return error(
+      "Failed to fetch preview audio",
+      500,
+      corsHeaders
+    );
+  }
+
+  return new Response(response.body, {
+    status: response.status,
     headers: {
       ...corsHeaders,
 
       "Content-Type":
-        audio.headers.get("content-type") ||
+        response.headers.get("content-type") ||
         "audio/mpeg",
 
-      "Accept-Ranges": "bytes",
+      "Content-Length":
+        response.headers.get("content-length") || "",
+
+      "Accept-Ranges":
+        response.headers.get("accept-ranges") || "bytes",
 
       "Content-Range":
-        audio.headers.get("content-range") || "",
+        response.headers.get("content-range") || "",
+
+      "Cache-Control":
+        "public, max-age=86400",
+
+      // IMPORTANT
+      "Cross-Origin-Resource-Policy":
+        "cross-origin",
+
+      "Cross-Origin-Embedder-Policy":
+        "require-corp",
     },
   });
 }
