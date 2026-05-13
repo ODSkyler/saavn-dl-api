@@ -19,6 +19,70 @@ export default {
       const url = new URL(request.url);
       const pathname = url.pathname;
 
+      // IMAGE PROXY
+if (pathname === "/image") {
+  const target = url.searchParams.get("url");
+
+  if (!target) {
+    return error(
+      "Missing image URL",
+      400,
+      corsHeaders
+    );
+  }
+
+  const img = await fetch(target);
+
+  return new Response(img.body, {
+    headers: {
+      ...corsHeaders,
+      "Content-Type":
+        img.headers.get("content-type") ||
+        "image/jpeg",
+
+      "Cache-Control":
+        "public, max-age=86400",
+    },
+  });
+}
+
+// PREVIEW AUDIO PROXY
+if (pathname === "/preview") {
+  const target = url.searchParams.get("url");
+
+  if (!target) {
+    return error(
+      "Missing preview URL",
+      400,
+      corsHeaders
+    );
+  }
+
+  const audio = await fetch(target, {
+    headers: {
+      Range:
+        request.headers.get("Range") ||
+        "bytes=0-",
+    },
+  });
+
+  return new Response(audio.body, {
+    status: audio.status,
+    headers: {
+      ...corsHeaders,
+
+      "Content-Type":
+        audio.headers.get("content-type") ||
+        "audio/mpeg",
+
+      "Accept-Ranges": "bytes",
+
+      "Content-Range":
+        audio.headers.get("content-range") || "",
+    },
+  });
+}
+
       // ROOT
       if (pathname === "/") {
         return json(
