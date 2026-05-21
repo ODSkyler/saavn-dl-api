@@ -1,6 +1,7 @@
 # Saavn Downloader API
 
 Ultra-lightweight JioSaavn song metadata API built for downloaders, streamers and music apps.  
+Currently being used by saavn-dl.pages.dev and saavn.squid.wtf
 
 No bloated wrappers.  
 No useless modules.  
@@ -107,7 +108,7 @@ Example:
 ### 1. Clone
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/saavn-dl-api.git
+git clone https://github.com/ODSkyler/saavn-dl-api.git
 cd saavn-dl-api
 ```
 
@@ -142,7 +143,7 @@ Use:
 - PKCS7 padding
 - Key: 38346591
 ```
-- Designed for music downloader apps
+- Designed for saavn-dl
 
 ---
 
@@ -187,7 +188,7 @@ Users are solely responsible for how they use this software.
 
 ## License
 
-MIT
+This project is licensed under MIT License
 
 ---
 
