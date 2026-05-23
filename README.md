@@ -159,6 +159,22 @@ This one stays simple.
 
 ---
 
+## Geo Restrictions
+
+JioSaavn applies regional restrictions on some English and international songs/albums outside India due to licensing issues.
+`Source: JioSaavn FAQ`
+
+Since this API is hosted on Cloudflare's global network, requests may sometimes route through non-Indian regions. Because of this, English/international content may:
+- not appear in results
+- return incomplete metadata
+- fail to resolve properly
+
+Hindi and most Indian regional content usually work without issues.
+
+This is a limitation from JioSaavn's side, so It's not my fault and not API bug. But I'm working on geo-restriction bypass so stay tuned!
+
+---
+
 ## Disclaimer
 
 This project is created strictly for educational and research purposes only.
