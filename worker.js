@@ -276,13 +276,9 @@ function buildHeaders(refererUrl) {
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
 
     cookie:
-      "_pl=web6dot0_; " +
-      "DL=english; " +
-      "B=74f2d64d49fd2f66399c06719d0085ac; " +
-      "CT=NDa3Mlk5MyY0; " +
-      "L=hindi%2Cenglish; " +
-      "mm_latlong=20.2706%2C85.8334; " +
-      "CH=G03%2CA07%2C000%2CL03; ",
+      "L=english; " +
+      "mm_latlong=19.0760%2C72.8777; " +
+      "geo=19.0760%2C72.8777%2CIN%2CMaharashtra%2CMumbai%2C400001",
   };
 }
 
