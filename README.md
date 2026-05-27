@@ -1,8 +1,8 @@
 # Saavn Downloader API
 
 Ultra-lightweight JioSaavn song metadata API built for downloaders, streamers and music apps.  
-Currently being used by:
-https://saavn-dl.pages.dev (Official)
+Currently being used by: <br>
+https://saavn-dl.pages.dev (Official) <br>
 https://saavn.squid.wtf (SquidBoard instance)
 
 ---
