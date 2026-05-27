@@ -16,7 +16,6 @@ https://saavn.squid.wtf (SquidBoard instance)
 - Cloudflare Worker based
 - Extremely fast
 - Frontend friendly
-- CORS enabled
 
 ---
 
