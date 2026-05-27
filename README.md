@@ -1,11 +1,9 @@
 # Saavn Downloader API
 
 Ultra-lightweight JioSaavn song metadata API built for downloaders, streamers and music apps.  
-Currently being used by saavn-dl.pages.dev and saavn.squid.wtf
-
-No bloated wrappers.  
-No useless modules.  
-Just clean song data.
+Currently being used by:
+https://saavn-dl.pages.dev (Official)
+https://saavn.squid.wtf (SquidBoard instance)
 
 ---
 
@@ -13,11 +11,8 @@ Just clean song data.
 
 - Extracts song metadata from JioSaavn URLs
 - Clean JSON response
-- High-quality 500x500 artwork
 - Artist + album parsing
 - Song preview URL support
-- Encrypted media URL extraction
-- Permanent CDN link after decryption
 - Cloudflare Worker based
 - Extremely fast
 - Frontend friendly
@@ -143,20 +138,6 @@ Use:
 - PKCS7 padding
 - Key: 38346591
 ```
-- Designed for saavn-dl
-
----
-
-## Why?
-
-Because most JioSaavn APIs on GitHub are
-- abandoned
-- bloated
-- broken
-- insanely slow
-
-This one stays simple.
-
 ---
 
 ## Geo Restrictions
