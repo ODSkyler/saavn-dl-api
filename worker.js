@@ -616,7 +616,7 @@ function cleanSong(song) {
     },
 
     artists: {
-      primary_artists: (
+      primary: (
         artistMap.primary_artists ||
         []
       ).map((artist) => ({
@@ -639,7 +639,7 @@ function cleanSong(song) {
           artist.perma_url,
       })),
 
-      featured_artists: (
+      featured: (
         artistMap.featured_artists ||
         []
       ).map((artist) => ({
