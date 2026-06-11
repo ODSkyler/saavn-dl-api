@@ -544,47 +544,127 @@ function cleanSong(song) {
       })),
     },
 
-    songs:
-      (album.list || []).map(
-        (song) => ({
-          id: song.id,
+    songs: (album.list || []).map((song) => {
+  const info = song.more_info || {};
+  const artistMap =
+    info.artistMap || {};
 
-          token:
-            extractToken(
-              song.perma_url
-            ),
+  return {
+    id: song.id,
 
-          title:
-            song.title,
+    token: extractToken(
+      song.perma_url || ""
+    ),
 
-          subtitle:
-            song.subtitle,
+    title: song.title,
 
-          image:
-            upgradeImage(
-              song.image
-            ),
+    subtitle:
+      song.subtitle,
 
-          duration:
-            song.more_info
-              ?.duration,
+    type: "track",
 
-          language:
-            song.language,
+    track_url:
+      song.perma_url,
 
-          year:
-            song.year,
+    duration:
+      info.duration,
 
-          isExplicit:
-            song.explicit_content ===
-            "1",
-
-          perma_url:
-            song.perma_url,
-        })
+    image:
+      upgradeImage(
+        song.image
       ),
+
+    language:
+      song.language,
+
+    year:
+      song.year,
+
+    isExplicit:
+      song.explicit_content ===
+      "1",
+
+    encrypted_media_url:
+      info.encrypted_media_url,
+
+    more_info: {
+      album_id:
+        info.album_id,
+
+      album_token:
+        extractToken(
+          info.album_url || ""
+        ),
+
+      album:
+        info.album,
+
+      album_url:
+        info.album_url,
+
+      release_date:
+        info.release_date,
+
+      label:
+        info.label,
+
+      preview:
+        info.vlink,
+
+      copyright:
+        info.copyright_text,
+    },
+
+    artists: {
+      primary_artists: (
+        artistMap.primary_artists ||
+        []
+      ).map((artist) => ({
+        id: artist.id,
+
+        artist_token:
+          extractToken(
+            artist.perma_url || ""
+          ),
+
+        name:
+          artist.name,
+
+        image:
+          upgradeImage(
+            artist.image
+          ),
+
+        artist_url:
+          artist.perma_url,
+      })),
+
+      featured_artists: (
+        artistMap.featured_artists ||
+        []
+      ).map((artist) => ({
+        id: artist.id,
+
+        artist_token:
+          extractToken(
+            artist.perma_url || ""
+          ),
+
+        name:
+          artist.name,
+
+        image:
+          upgradeImage(
+            artist.image
+          ),
+
+        artist_url:
+          artist.perma_url,
+      })),
+    },
   };
-}
+})
+
 
 function json(data, headers) {
   return new Response(
