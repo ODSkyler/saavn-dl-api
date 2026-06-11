@@ -222,6 +222,78 @@ if (pathname === "/preview") {
         return json(cleaned, corsHeaders);
       }
 
+      // ALBUM ROUTE
+      if (pathname === "/album") {
+        const albumUrl =
+        url.searchParams.get("url");
+
+      if (!albumUrl) {
+        return error(
+        "Missing 'url' query parameter",
+        400,
+        corsHeaders
+       );
+     }
+
+     if (
+       !albumUrl.includes(
+       "jiosaavn.com/album/"
+        )
+     ) {
+     return error(
+      "Invalid JioSaavn album URL",
+      400,
+      corsHeaders
+      );
+    }
+
+    const token =
+       extractToken(albumUrl);
+
+    if (!token) {
+     return error(
+         "Could not extract album token",
+         400,
+         corsHeaders
+       );
+     }
+
+     const endpoint =
+       "https://www.jiosaavn.com/api.php" +
+       `?__call=webapi.get` +
+       `&token=${encodeURIComponent(
+         token
+       )}` +
+       `&type=album` +
+       `&includeMetaTags=0` +
+       `&ctx=web6dot0` +
+       `&api_version=4` +
+       `&_format=json` +
+       `&_marker=0`;
+
+     const response =
+       await fetch(endpoint, {
+         headers:
+           buildHeaders(albumUrl),
+       });
+
+     if (!response.ok) {
+       return error(
+         "Failed to fetch album data",
+         500,
+         corsHeaders
+       );
+     }
+
+     const album =
+       await response.json();
+
+     return json(
+       cleanAlbum(album),
+       corsHeaders
+     );
+   }
+
       return error(
         "Route not found",
         404,
@@ -372,6 +444,145 @@ function cleanSong(song) {
 
       vlink: info.vlink,
     },
+  };
+}
+
+
+  function cleanAlbum(album) {
+  const info =
+    album.more_info || {};
+
+  const artistMap =
+    info.artistMap || {};
+
+  return {
+    id: album.id,
+
+    token: extractToken(
+      album.perma_url
+    ),
+
+    title: album.title,
+
+    subtitle:
+      album.subtitle,
+
+    header_desc:
+      album.header_desc,
+
+    type: album.type,
+
+    perma_url:
+      album.perma_url,
+
+    image:
+      upgradeImage(
+        album.image
+      ),
+
+    language:
+      album.language,
+
+    year:
+      album.year,
+
+    song_count:
+      album.list_count,
+
+    isExplicit:
+      album.explicit_content ===
+      "1",
+
+    copyright:
+      info.copyright_text,
+
+    artists: {
+      primary: (
+        artistMap.primary_artists ||
+        []
+      ).map((artist) => ({
+        id: artist.id,
+
+        artist_token:
+          extractToken(
+            artist.perma_url || ""
+          ),
+
+        name:
+          artist.name,
+
+        image:
+          upgradeImage(
+            artist.image
+          ),
+
+        perma_url:
+          artist.perma_url,
+      })),
+
+      featured: (
+        artistMap.featured_artists ||
+        []
+      ).map((artist) => ({
+        id: artist.id,
+
+        artist_token:
+          extractToken(
+            artist.perma_url || ""
+          ),
+
+        name:
+          artist.name,
+
+        image:
+          upgradeImage(
+            artist.image
+          ),
+
+        perma_url:
+          artist.perma_url,
+      })),
+    },
+
+    songs:
+      (album.list || []).map(
+        (song) => ({
+          id: song.id,
+
+          token:
+            extractToken(
+              song.perma_url
+            ),
+
+          title:
+            song.title,
+
+          subtitle:
+            song.subtitle,
+
+          image:
+            upgradeImage(
+              song.image
+            ),
+
+          duration:
+            song.more_info
+              ?.duration,
+
+          language:
+            song.language,
+
+          year:
+            song.year,
+
+          isExplicit:
+            song.explicit_content ===
+            "1",
+
+          perma_url:
+            song.perma_url,
+        })
+      ),
   };
 }
 
