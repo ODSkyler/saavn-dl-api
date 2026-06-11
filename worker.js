@@ -663,7 +663,9 @@ function cleanSong(song) {
       })),
     },
   };
-})
+}),
+  };
+}
 
 
 function json(data, headers) {
