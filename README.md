@@ -1,15 +1,16 @@
 # Saavn Downloader API
 
-Ultra-lightweight JioSaavn song metadata API built for downloaders, streamers and music apps.  
+Ultra-lightweight JioSaavn song metadata API built for saavn-dl.  
 Currently being used by: <br>
 https://saavn-dl.pages.dev (Official) <br>
-https://saavn.squid.wtf (SquidBoard instance)
+https://saavn.squid.wtf (SquidBoard instance) <br>
+Check out https://github.com/ODSkyler/jiosaavn-api for more info!
 
 ---
 
 ## Features
 
-- Extracts song metadata from JioSaavn URLs
+- Extracts song/album metadata from JioSaavn URLs
 - Clean JSON response
 - Artist + album parsing
 - Song preview URL support
@@ -21,21 +22,33 @@ https://saavn.squid.wtf (SquidBoard instance)
 
 ## Example
 
-### Input
+### Song Input
 
 ```txt
 https://www.jiosaavn.com/song/blinding-lights/Fj9GfAxDWUY
 ```
 
-### Endpoint
+### Album Input
+
+```txt
+https://www.jiosaavn.com/album/after-hours/y0pOEMYQFWQ_
+```
+
+### Song Endpoint
 
 ```txt
 https://sda.rhythmax.workers.dev/song?url=https://www.jiosaavn.com/song/blinding-lights/Fj9GfAxDWUY
 ```
 
+### Album Endpoint
+
+```txt
+https://sda.rhythmax.workers.dev/album?url=https://www.jiosaavn.com/album/after-hours/y0pOEMYQFWQ_
+```
+
 ---
 
-## Example Response
+## Example Response for Song
 
 ```json
 {
@@ -77,22 +90,75 @@ https://sda.rhythmax.workers.dev/song?url=https://www.jiosaavn.com/song/blinding
 }
 ```
 
----
+## Example Response for Album
 
-## Routes
-
-Response:
-
-### Fetch Song
-
-```txt
-GET /song?url=JIOSAAVN_URL
-```
-
-Example:
-
-```txt
-/song?url=https://www.jiosaavn.com/song/blinding-lights/Fj9GfAxDWUY
+```json
+{
+  "id": "19531208",
+  "token": "y0pOEMYQFWQ_",
+  "title": "After Hours",
+  "subtitle": "The Weeknd",
+  "header_desc": "2020 · English Album · The Weeknd",
+  "type": "album",
+  "perma_url": "https://www.jiosaavn.com/album/after-hours/y0pOEMYQFWQ_",
+  "image": "https://c.saavncdn.com/077/After-Hours-English-2020-20240207070330-500x500.jpg",
+  "language": "english",
+  "year": "2020",
+  "song_count": "14",
+  "isExplicit": true,
+  "copyright": "℗ 2020 The Weeknd XO, Inc.",
+  "artists": {
+    "primary": [
+      {
+        "id": "615155",
+        "artist_token": "FJRb7GbYWrQ_",
+        "name": "The Weeknd",
+        "image": "https://c.saavncdn.com/artists/The_Weeknd_002_20241003071400_500x500.jpg",
+        "perma_url": "https://www.jiosaavn.com/artist/the-weeknd-songs/FJRb7GbYWrQ_"
+      }
+    ],
+    "featured": []
+  },
+  "songs": [
+    {
+      "id": "fW-Mxsnu",
+      "token": "Fj9GfAxDWUY",
+      "title": "Blinding Lights",
+      "subtitle": "The Weeknd - After Hours",
+      "type": "song",
+      "perma_url": "https://www.jiosaavn.com/song/blinding-lights/Fj9GfAxDWUY",
+      "image": "https://c.saavncdn.com/077/After-Hours-English-2020-20240207070330-500x500.jpg",
+      "language": "english",
+      "year": "2020",
+      "play_count": "36483136",
+      "isExplicit": true,
+      "more_info": {
+        "album_id": "19531208",
+        "album_token": "y0pOEMYQFWQ_",
+        "album": "After Hours",
+        "album_url": "https://www.jiosaavn.com/album/after-hours/y0pOEMYQFWQ_",
+        "encrypted_media_url": "ID2ieOjCrwfgWvL5sXl4B1ImC5QfbsDyi/BLZu7e+Ua0SbPMHRYSGrRsUG6JhLOJ2PIigzqe+euc2PinCwWEMRw7tS9a8Gtq",
+        "duration": "204",
+        "copyright_text": "℗ 2019 The Weeknd XO, Inc., manufactured and marketed by Republic Records, a division of UMG Recordings, Inc.",
+        "artists": {
+          "primary": [
+            {
+              "id": "615155",
+              "artist_token": "FJRb7GbYWrQ_",
+              "name": "The Weeknd",
+              "image": "https://c.saavncdn.com/artists/The_Weeknd_002_20241003071400_500x500.jpg",
+              "perma_url": "https://www.jiosaavn.com/artist/the-weeknd-songs/FJRb7GbYWrQ_"
+            }
+          ],
+          "featured": []
+        },
+        "release_date": "2020-03-20",
+        "vcode": "010912291152065",
+        "vlink": "https://jiotunepreview.jio.com/content/Converted/010912291108341.mp3"
+      }
+    }
+  ]
+}
 ```
 
 ---
@@ -137,22 +203,6 @@ Use:
 - PKCS7 padding
 - Key: 38346591
 ```
----
-
-## Geo Restrictions
-
-JioSaavn applies regional restrictions on some English and international songs/albums outside India due to licensing issues.
-`Source: JioSaavn FAQ`
-
-Since this API is hosted on Cloudflare's global network, requests may sometimes route through non-Indian regions. Because of this, English/international content may:
-- not appear in results
-- return incomplete metadata
-- fail to resolve properly
-
-Hindi and most Indian regional content usually work without issues.
-
-This is a limitation from JioSaavn's side, so It's not my fault and not API bug. But I'm working on geo-restriction bypass so stay tuned!
-
 ---
 
 ## Disclaimer
