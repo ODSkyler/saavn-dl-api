@@ -140,6 +140,7 @@ if (pathname === "/preview") {
             status: "running",
             endpoints: {
               song: "/song?url=JIOSAAVN_SONG_URL",
+              album: "/album?url=JIOSAAVN_ALBUM_URL",
             },
           },
           corsHeaders
