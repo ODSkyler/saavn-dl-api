@@ -314,6 +314,20 @@ if (pathname === "/preview") {
 // HELPERS
 // ========================
 
+function sanitizeText(text) {
+  if (!text || typeof text !== "string") {
+    return text;
+  }
+
+  return text
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
+
 function extractToken(url) {
   try {
     const clean = url.split("?")[0];
@@ -363,86 +377,64 @@ function cleanSong(song) {
     id: song.id,
     token: extractToken(song.perma_url),
 
-    title: song.title,
-    subtitle: song.subtitle,
+    title: sanitizeText(song.title),
+    subtitle: sanitizeText(song.subtitle),
     type: song.type,
-
     perma_url: song.perma_url,
-
     image: upgradeImage(song.image),
-
     language: song.language,
     year: song.year,
-
     play_count: song.play_count,
-
     isExplicit:
       song.explicit_content === "1",
-
     more_info: {
       album_id: info.album_id,
-
+      
       album_token: extractToken(
         info.album_url || ""
       ),
 
-      album: info.album,
-
+      album: sanitizeText(info.album),
       album_url: info.album_url,
-
       encrypted_media_url:
         info.encrypted_media_url,
-
       duration: info.duration,
-
       copyright_text:
-        info.copyright_text,
+        sanitizeText(info.copyright_text),
 
       artists: {
         primary: (
           artistMap.primary_artists || []
         ).map((artist) => ({
           id: artist.id,
-
           artist_token: extractToken(
             artist.perma_url || ""
           ),
-
-          name: artist.name,
-
+          name: sanitizeText(artist.name),
           image: upgradeImage(
             artist.image
           ),
-
           perma_url:
             artist.perma_url,
         })),
-
         featured: (
           artistMap.featured_artists || []
         ).map((artist) => ({
           id: artist.id,
-
           artist_token: extractToken(
             artist.perma_url || ""
           ),
-
-          name: artist.name,
-
+          name: sanitizeText(artist.name),
           image: upgradeImage(
             artist.image
           ),
-
           perma_url:
             artist.perma_url,
         })),
       },
-
       release_date:
         info.release_date,
-
       vcode: info.vcode,
-
       vlink: info.vlink,
     },
   };
@@ -458,93 +450,72 @@ function cleanSong(song) {
 
   return {
     id: album.id,
-
     token: extractToken(
       album.perma_url
     ),
-
-    title: album.title,
+    title: sanitizeText(album.title),
 
     subtitle:
-      album.subtitle,
+      sanitizeText(album.subtitle),
 
     header_desc:
-      album.header_desc,
-
+      sanitizeText(album.header_desc),
     type: album.type,
-
     perma_url:
       album.perma_url,
-
     image:
       upgradeImage(
         album.image
       ),
-
     language:
       album.language,
-
     year:
       album.year,
-
     song_count:
       album.list_count,
-
     isExplicit:
       album.explicit_content ===
       "1",
-
     copyright:
       info.copyright_text,
-
     artists: {
       primary: (
         artistMap.primary_artists ||
         []
       ).map((artist) => ({
         id: artist.id,
-
         artist_token:
           extractToken(
             artist.perma_url || ""
           ),
-
         name:
-          artist.name,
-
+          sanitizeText(artist.name),
         image:
           upgradeImage(
             artist.image
           ),
-
         perma_url:
           artist.perma_url,
       })),
-
       featured: (
         artistMap.featured_artists ||
         []
       ).map((artist) => ({
         id: artist.id,
-
         artist_token:
           extractToken(
             artist.perma_url || ""
           ),
-
         name:
-          artist.name,
-
+          sanitizeText(artist.name),
         image:
           upgradeImage(
             artist.image
           ),
-
         perma_url:
           artist.perma_url,
       })),
     },
-
     songs: (album.list || [])
   .map(cleanSong),
   };
