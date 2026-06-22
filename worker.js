@@ -181,7 +181,7 @@ if (pathname === "/preview") {
       if (pathname === "/") {
         return json(
           {
-            repo: "ODSkyler/saavn-dl-api",
+            github: "ODSkyler",
             status: "running",
             endpoints: {
               song: "/song?url=JIOSAAVN_SONG_URL",
