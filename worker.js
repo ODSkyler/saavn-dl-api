@@ -19,6 +19,51 @@ export default {
       const url = new URL(request.url);
       const pathname = url.pathname;
 
+// REQUEST LOGGING
+
+const cf = request.cf || {};
+
+console.log(
+  JSON.stringify({
+    timestamp:
+      new Date().toISOString(),
+
+    path: pathname,
+
+    method:
+      request.method,
+
+    country:
+      cf.country || null,
+
+    city:
+      cf.city || null,
+
+    colo:
+      cf.colo || null,
+
+    ip:
+      request.headers.get(
+        "cf-connecting-ip"
+      ),
+
+    origin:
+      request.headers.get(
+        "origin"
+      ),
+
+    referer:
+      request.headers.get(
+        "referer"
+      ),
+
+    userAgent:
+      request.headers.get(
+        "user-agent"
+      ),
+  })
+);
+
 // IMAGE PROXY
 
 if (pathname === "/image") {
