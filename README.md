@@ -4,7 +4,7 @@ Ultra-lightweight JioSaavn song metadata API built for saavn-dl.
 Currently being used by: <br>
 https://saavn-dl.pages.dev (Official) <br>
 https://saavn.squid.wtf (SquidBoard instance) <br>
-Check out https://github.com/ODSkyler/jiosaavn-api for more info!
+This API does not support search. Check out https://github.com/ODSkyler/jiosaavn-api for more info!
 
 ---
 
@@ -198,8 +198,7 @@ npm run deploy
 - Decryption should be done on frontend/client
 ```bash
 Use:
-- DES
-- ECB mode
+- DES-ECB mode
 - PKCS7 padding
 - Key: 38346591
 ```
