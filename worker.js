@@ -421,7 +421,6 @@ function cleanSong(song) {
   return {
     id: song.id,
     token: extractToken(song.perma_url),
-
     title: sanitizeText(song.title),
     subtitle: sanitizeText(song.subtitle),
     type: song.type,
@@ -434,19 +433,15 @@ function cleanSong(song) {
       song.explicit_content === "1",
     more_info: {
       album_id: info.album_id,
-      
-      album_token: extractToken(
-        info.album_url || ""
-      ),
-
+      album_token: extractToken(info.album_url || ""),
       album: sanitizeText(info.album),
+      label: sanitizeText(info.label),
       album_url: info.album_url,
       encrypted_media_url:
         info.encrypted_media_url,
       duration: info.duration,
       copyright_text:
         sanitizeText(info.copyright_text),
-
       artists: {
         primary: (
           artistMap.primary_artists || []
@@ -489,20 +484,16 @@ function cleanSong(song) {
   function cleanAlbum(album) {
   const info =
     album.more_info || {};
-
   const artistMap =
     info.artistMap || {};
-
   return {
     id: album.id,
     token: extractToken(
       album.perma_url
     ),
     title: sanitizeText(album.title),
-
     subtitle:
       sanitizeText(album.subtitle),
-
     header_desc:
       sanitizeText(album.header_desc),
     type: album.type,
